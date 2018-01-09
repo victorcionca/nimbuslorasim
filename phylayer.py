@@ -21,7 +21,17 @@ class PhyLayer(NwkLayerTemplate):
         """
         pass
 
-    def dispatch(self, pkt):
+    def send(self, pkt, dest):
+        """
+        A new packet for sending over the air.
+        """
+        # No processing, dispatch right away
+        if self.lower is None:
+            # TODO throw error
+            pass
+        self.lower.send(pkt, dest)
+
+    def recv(self, pkt, src):
         """
         A packet is on the channel and it's within earshot.
         Process the packet and its collisions
@@ -37,4 +47,7 @@ class PhyLayer(NwkLayerTemplate):
         # Yield for the pkt airtime
 
         # Remove from the list
+
+        # If there were no collisions, forward to upper layer
+
         pass

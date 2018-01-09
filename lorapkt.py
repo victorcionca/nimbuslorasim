@@ -1,8 +1,9 @@
 class LoraPacket():
 
     def __init__(self, config, data):
-        self.config = config
+        self.config = config    # TXpow, SF, BW, CR
         self.data = data
+        self.rssi = None
         self.status = None
         self.airtime = None
 

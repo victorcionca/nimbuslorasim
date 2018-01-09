@@ -7,13 +7,13 @@ class LoraNodeTemplate():
         id      -- id of node
         location-- location
         config  -- config, such as sf, txpower, bw, cr
-        netstack-- network stack to use, class
+        netstack-- network stack to use, unique for the node
         sim     -- simulator to access timing and events
         """
         self.id = id
         self.location = location
         self.config = config
-        self.netstack = netstack(sim)
+        self.netstack = netstack
 
     def app_process(self):
         """
