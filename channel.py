@@ -12,25 +12,14 @@ class Channel():
           However - receive windows in LoRa?
     """
 
-    sensitivity = {}        # Dictionary of sensitivity, indexed by SF
-
-    def __init__(self, nodes):
+    def __init__(self, nodes, channel_model):
+        """
+        Parameters
+        nodes         -- List of nodes to consider in the network
+        channel_model -- Channel model class
+        """
         self.nodes = nodes
-
-    def path_loss(self, src, dest, pkt):
-        """
-        Determines the path loss for the packet
-        travelling from src to destination.
-        Packet configuration is in pkt
-        """
-        pass
-
-    def calculate_rssi(self, src, dest, pkt):
-        """
-        Based on the pkt configuration, determine the RSSI of the pkt at dest.
-        """
-        path_loss = self.path_loss(src, dest, pkt)
-        return pkt.config.txpow - path_loss
+        self.channel_model = channel_model
 
     def deliver(self, pkt, src, dest):
         """
@@ -41,7 +30,7 @@ class Channel():
         # Determine based on the pkt config if the transmission
         # reaches dest with RSSI over the sensitivity threshold.
         pkt_rssi = self.calculate_rssi(pkt, src, dest)
-        if pkt_rssi < Channel.sensitivity[pkt.config.sf]:
+        if pkt_rssi < self.channel_model.sensitivity[pkt.config.sf]:
             # If so, set the pkt RSSI and 
             # insert into dest network stack.
             pkt.rssi = pkt_rssi
