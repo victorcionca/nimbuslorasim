@@ -1,0 +1,19 @@
+Milestone 1:  Able to replicate the functionality of the legacy simulator.
+* test the functionality with the same seed
+* should obtain roughly the same result.
+
+[ ] Exception handling - we need a default exception
+
+Milestone 2: Support for any to any traffic
+[ ] Radio state TX vs RX
+[ ] Channel model dispatch packet to all nodes in range.
+
+Milestone 3: Lorawan class A devices
+[ ] Confirmed and unconfirmed transmissions
+
+Milestone 4: Multiple gateways
+* GWs are transparent; devices report to the nwk server
+[ ] Do we need a nwk server as well?
+
+Other
+[ ] Support for more complex areas? Such as 3d models?

@@ -1,10 +1,10 @@
-from loranode_template import LoraNodeTemplate
-from random import expovariate
 from nwkstack import NetworkStack
 
-class PeriodicLoraNode(LoraNodeTemplate):
+# TODO: Improve this
 
-    def __init__(self, id, location, config, netstack, sim, period):
+class LoraGW():
+
+    def __init__(self, location, config, netstack, sim):
         """
         A node that sends data periodically
 
@@ -14,15 +14,12 @@ class PeriodicLoraNode(LoraNodeTemplate):
         config  -- config, such as sf, txpower, bw, cr
         netstack-- network stack to use
         sim     -- simulator to access timing and events
-        period  -- data send period
         """
-        self.id = id
+        self.id = 0     # GWs always have id 0 for convenience; other nodes start at 1
         self.location = location
-        self.config = config
+        self.config = config        # Doesn't the GW use special config, as in lowest data rate?
         self.netstack = netstack
         self.sim = sim
-        # TODO: period should be kwargs
-        self.period = period
 
     def config_net_stack(self, layers, logger, channel):
         if self.config is None or self.sim is None:
@@ -38,13 +35,12 @@ class PeriodicLoraNode(LoraNodeTemplate):
         and feeds them to the network stack
         Makes use of the simulator for timings, events, etc.
         """
-        while True:
-            self.netstack.transmit("Hello", 0)  # Send "Hello" to the GW
-            yield self.sim.timeout(expovariate(1.0/float(self.period)))
+        # GW doesn't send packets periodically, it sends commands/ACKs etc
+        pass
 
     def app_receive(self, data, src):
         """
         Callback to be passed to the network stack constructor.
         The net stack will call this when packets are received.
         """
-        pass
+        print('RXd', data, 'from', src)
