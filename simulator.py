@@ -52,6 +52,7 @@ def simulate(num_nodes, area, simtime, logfile, channel_model, net_layers, depl_
 
     # 5. Set up network stack for all nodes
     for g in gw:
+        g.sim = sim_eng
         g.config_net_stack(net_layers, logger, channel)
 
     for n in nodes:

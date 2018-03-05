@@ -1,4 +1,5 @@
 from nwkstack import NetworkStack
+from phylayer import PhyLayer
 
 # TODO: Improve this
 
@@ -20,14 +21,22 @@ class LoraGW():
         self.config = config        # Doesn't the GW use special config, as in lowest data rate?
         self.netstack = netstack
         self.sim = sim
+        self.phy = PhyLayer(sim, config, None)
+        self.phy.myid = 0
 
     def config_net_stack(self, layers, logger, channel):
         if self.config is None or self.sim is None:
             # TODO throw exception
             pass
         nwkstack = NetworkStack(logger, layers, self.sim, self.config,
-                                self.app_receive, channel, self.id)
+                                self.app_receive, self.id)
         self.netstack = nwkstack
+        # Connect the network stack to the phy layer
+        nwkstack.layers[-1].lower = self.phy
+        self.phy.upper = nwkstack.layers[-1]
+        self.phy.channel = channel
+        self.phy.logger = logger
+        self.phy.sim = self.sim
 
     def app_process(self):
         """

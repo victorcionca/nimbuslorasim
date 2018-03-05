@@ -17,11 +17,12 @@ class PhyLayer(NwkLayerTemplate):
     collisions = ['simple', 'capture', 'capture_nonorth']
 
     def __init__(self, sim, config, logger):
+        self.myid = None
         self.sim = sim
         self.config = config
         self.logger = logger
         self.upper = None
-        self.lower = None   # This won't change, there's nothing below
+        self.channel = None
         # PHY specific stuff
         self.incoming = []  # Packets in transit towards node
         # Configure the type of collision handled
@@ -39,12 +40,12 @@ class PhyLayer(NwkLayerTemplate):
                 return True
         return False
 
-    def sf_collision(p1, p2):
+    def sf_collision(self, p1, p2):
         if p1.config['sf'] == p2.config['sf']:
             return True
         return False
 
-    def powerCollision_1(p1, p2):
+    def power_collision_1(self, p1, p2):
         """Collision with capture effect"""
         powerThreshold = 6
         if p1.config['sf'] == p2.config['sf']:
@@ -60,12 +61,12 @@ class PhyLayer(NwkLayerTemplate):
         else:
             return ()
 
-    def powerCollision_2(p1, p2):
+    def power_collision_2(self, p1, p2):
         """Collision with capture effect and cross-channel interference"""
         # Conservative powerThreshold
         powerThreshold = 6
         if p1.config['sf'] == p2.config['sf']:
-            return powerCollision_1(p1, p2)
+            return self.power_collision_1(p1, p2)
         else:
             # Checking for cross channel interference
             if abs(p1.rssi - p2.rssi) < powerThreshold:
@@ -74,7 +75,7 @@ class PhyLayer(NwkLayerTemplate):
                return (p2,)
             return (p1,)
 
-    def timingCollision(p1, p2):
+    def timing_collision(self, p1, p2):
         # assuming p1 is the freshly arrived packet and this is the last check
         # we've already determined that p1 is a weak packet, so the only
         # way we can win is by being late enough (only the first n - 5 preamble symbols overlap)
@@ -122,15 +123,26 @@ class PhyLayer(NwkLayerTemplate):
         """
         A new packet for sending over the air.
         """
-        # No processing, dispatch right away
-        if self.lower is None:
-            # TODO throw error
-            pass
         # Set the packet send time
         pkt.sendtime = self.sim.now
-        self.lower.send(pkt, dest)
+        # TODO Should check if the TX is not busy at this time
+        self.sim.process(self.send_process(pkt, dest))
+        # TODO do we want to return something?
 
-    def recv(self, pkt, src):
+    def send_process(self, pkt, dest):
+        """
+        This is a simpy process that transmits the packet to the channel.
+        """
+        # Start transmitting the packet
+        self.channel.packet_start(pkt, self.myid, dest)
+        # Wait for the packet airtime
+        yield self.sim.timeout(pkt.airtime())
+        # Now notify the channel of packet completion
+        rssi = self.channel.packet_end(pkt, self.myid, dest)
+        # TODO log the results. Get the RSSI somehow
+        self.logger.sent(self.myid, rssi)
+
+    def recv_start(self, pkt, src):
         """
         A packet is on the channel and it's within earshot.
         Process the packet and its collisions
@@ -143,10 +155,12 @@ class PhyLayer(NwkLayerTemplate):
         self.incoming.append(pkt)
         self.check_collisions()
 
-        # Yield for the pkt airtime
-        yield self.sim.timeout(pkt.airtime())
 
-        # Remove from the list
+    def recv_done(self, pkt, src):
+        """
+        A packet transmission is completed.
+        """
+        # Remove from the incoming list
         self.incoming.remove(pkt)
 
         # Log status of the packet

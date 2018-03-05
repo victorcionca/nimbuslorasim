@@ -1,3 +1,5 @@
+from math import ceil
+
 class LoraPacket():
 
     def __init__(self, config, data, src=None, dest=None,
@@ -16,7 +18,6 @@ class LoraPacket():
         self.rssi = None
         self.collided = False
         self.sendtime = None
-        self.airtime = None
         self.header = header
         self.preamble = preamble
         self.ldropt = ldropt
@@ -36,6 +37,6 @@ class LoraPacket():
 
         Tsym = (2.0**sf)/bw
         Tpream = (self.preamble + 4.25)*Tsym
-        payloadSymbNB = 8 + max(math.ceil((8.0*len(self.data)-4.0*sf+28+16-20*H)/(4.0*(sf-2*DE)))*(cr+4),0)
+        payloadSymbNB = 8 + max(ceil((8.0*len(self.data)-4.0*sf+28+16-20*H)/(4.0*(sf-2*DE)))*(cr+4),0)
         Tpayload = payloadSymbNB * Tsym
         return Tpream + Tpayload

@@ -7,6 +7,6 @@ class NodeConfigSlowestSetting():
         TX power is max (14)
         """
         for g in gws:
-            g.config = {'sf':12, 'bw':125, 'cr':(4,8), 'txp':14}
+            g.config = {'sf':12, 'bw':125, 'cr':(4,8), 'txp':14, 'freq':864000000}
         for n in nodes:
-            n.config = {'sf':12, 'bw':125, 'cr':(4,8), 'txp':14}
+            n.config = {'sf':12, 'bw':125, 'cr':(4,8), 'txp':14, 'freq':864000000}

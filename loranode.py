@@ -1,6 +1,7 @@
 from loranode_template import LoraNodeTemplate
 from random import expovariate
 from nwkstack import NetworkStack
+from phylayer import PhyLayer
 
 class PeriodicLoraNode(LoraNodeTemplate):
 
@@ -20,6 +21,8 @@ class PeriodicLoraNode(LoraNodeTemplate):
         self.location = location
         self.config = config
         self.netstack = netstack
+        self.phy = PhyLayer(sim, config, None)
+        self.phy.myid = id
         self.sim = sim
         # TODO: period should be kwargs
         self.period = period
@@ -29,8 +32,15 @@ class PeriodicLoraNode(LoraNodeTemplate):
             # TODO throw exception
             pass
         nwkstack = NetworkStack(logger, layers, self.sim, self.config,
-                                self.app_receive, channel, self.id)
+                                self.app_receive, self.id)
         self.netstack = nwkstack
+        # Connect the network stack to the phy layer
+        nwkstack.layers[-1].lower = self.phy
+        self.phy.upper = nwkstack.layers[-1]
+        self.phy.channel = channel
+        self.phy.logger = logger
+        self.phy.sim = self.sim
+        self.phy.config = self.config
 
     def app_process(self):
         """

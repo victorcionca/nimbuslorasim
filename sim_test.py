@@ -12,10 +12,10 @@ from simulator import simulate
 
 num_nodes = 100
 area = DiscArea(300)
-simtime = 24*3600   # 1 day of simulation
+simtime = 3600   # 1 day of simulation
 logfile = 'sim_%d.log'%int(time())
 channel_model = ChannelModel(area)
-net_layers = [PhyLayer]
+net_layers = []
 depl_eng = RandomNodeDeployment
 node_config = NodeConfigSlowestSetting
 
