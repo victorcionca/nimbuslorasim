@@ -69,3 +69,5 @@ def simulate(num_nodes, area, simtime, logfile, channel_model, net_layers, depl_
 
     # Save logger results
     logger.persist()
+
+    print('Avg DER=%0.2f'%(sum([n['tx_success']/n['sent'] for n in logger.pkt_log.values()])/len(nodes)))

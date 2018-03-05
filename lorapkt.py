@@ -39,4 +39,4 @@ class LoraPacket():
         Tpream = (self.preamble + 4.25)*Tsym
         payloadSymbNB = 8 + max(ceil((8.0*len(self.data)-4.0*sf+28+16-20*H)/(4.0*(sf-2*DE)))*(cr+4),0)
         Tpayload = payloadSymbNB * Tsym
-        return Tpream + Tpayload
+        return (Tpream + Tpayload)/1000

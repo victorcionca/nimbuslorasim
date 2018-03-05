@@ -50,6 +50,7 @@ class PeriodicLoraNode(LoraNodeTemplate):
         """
         while True:
             self.netstack.transmit("Hello", 0)  # Send "Hello" to the GW
+            #print('New packet at ', self.sim.now)
             yield self.sim.timeout(expovariate(1.0/float(self.period)))
 
     def app_receive(self, data, src):

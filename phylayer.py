@@ -85,7 +85,7 @@ class PhyLayer(NwkLayerTemplate):
 
         # check whether p2 ends in p1's critical section
         p2_end = p2.sendtime + p2.airtime()
-        p1_cs = self.sim.now + Tpreamb
+        p1_cs = p1.sendtime + Tpreamb/1000
         if p1_cs < p2_end:
             # p1 collided with p2 and lost
             return True

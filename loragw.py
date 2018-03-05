@@ -52,4 +52,4 @@ class LoraGW():
         Callback to be passed to the network stack constructor.
         The net stack will call this when packets are received.
         """
-        print('RXd', data, 'from', src)
+        #print('RXd', data, 'from', src)
