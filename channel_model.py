@@ -1,4 +1,4 @@
-from math import log10
+from math import log10, exp
 
 class ChannelModel():
 
@@ -38,8 +38,12 @@ class ChannelModel():
         path_loss = self.path_loss(src_loc, dest_loc, tx_config)
         return tx_config['txp'] - path_loss
 
-    def max_comms_range(self):
+    def max_comms_range(self, tx_config):
         """
-        Based on the sensitivity determine the maximum comms range
+        Based on the sensitivity and TX configuration 
+        determine the maximum comms range.
+        This is the range where the RSSI is equal to the sensitivity.
         """
-        pass
+        return self.d0*exp(
+                (tx_config['txp'] - self.Lpld0 - self.sensitivity[tx_config['sf']])
+                /(10*self.gamma))
