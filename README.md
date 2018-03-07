@@ -143,6 +143,7 @@ a theoretical ALOHA model. The simulator was run in pure ALOHA collisions, that 
 without capture effect.
 
 The results can be seen in the figure below.
+![Collision validation][validation]
 
 [validation]: collision_validation.png
 
