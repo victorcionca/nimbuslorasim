@@ -26,7 +26,8 @@ class PhyLayer(NwkLayerTemplate):
         # PHY specific stuff
         self.incoming = []  # Packets in transit towards node
         # Configure the type of collision handled
-        self.collision_type = 'capture_nonorth'
+        #self.collision_type = 'capture_nonorth'
+        self.collision_type = None
 
     def frequency_collision(self, p1, p2):
         if abs(p1.config['freq']-p2.config['freq'])<=120\
