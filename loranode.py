@@ -26,11 +26,13 @@ class PeriodicLoraNode(LoraNodeTemplate):
         self.sim = sim
         # TODO: period should be kwargs
         self.period = period
+        self.channel = None
 
     def config_net_stack(self, layers, logger, channel):
         if self.config is None or self.sim is None:
             # TODO throw exception
             pass
+        self.channel = channel
         nwkstack = NetworkStack(logger, layers, self.sim, self.config,
                                 self.app_receive, self.id)
         self.netstack = nwkstack
@@ -41,6 +43,14 @@ class PeriodicLoraNode(LoraNodeTemplate):
         self.phy.logger = logger
         self.phy.sim = self.sim
         self.phy.config = self.config
+
+    def set_config(self, config):
+        """
+        Updates the node's TX configuration
+        """
+        self.config = config
+        self.phy.config = config
+        self.channel.update_node(self, config)
 
     def app_process(self):
         """
