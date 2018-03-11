@@ -40,3 +40,17 @@ class LoraPacket():
         payloadSymbNB = 8 + max(ceil((8.0*len(self.data)-4.0*sf+28+16-20*H)/(4.0*(sf-2*DE)))*(cr+4),0)
         Tpayload = payloadSymbNB * Tsym
         return (Tpream + Tpayload)/1000
+
+    def __eq__(self, other):
+        """
+        Two packets are equal if they have the same source, dest and send time
+        """
+        return self.src == other.src and self.dest == other.dest and self.sendtime == other.sendtime
+
+    @classmethod
+    def clone(cls, pkt):
+        newpkt = LoraPacket(pkt.config, pkt.data, pkt.src,
+                            pkt.dest, pkt.header, pkt.preamble, pkt.ldropt)
+        newpkt.sendtime = pkt.sendtime
+        return newpkt
+
