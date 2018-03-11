@@ -139,23 +139,23 @@ class PhyLayer(NwkLayerTemplate):
         # Wait for the packet airtime
         yield self.sim.timeout(pkt.airtime())
         # Now notify the channel of packet completion
-        rssi = self.channel.packet_end(pkt, self.myid, dest)
-        # TODO log the results. Get the RSSI somehow
-        self.logger.sent(self.myid, rssi)
+        tx_success = self.channel.packet_end(pkt, self.myid, dest)
+        # TODO Inform upper layers of tx status
 
-    def recv_start(self, pkt, src):
+    def recv_start(self, pkt, src, rssi):
         """
-        A packet is on the channel and it's within earshot.
-        Process the packet and its collisions
+        A packet is on the channel and it's within earshot, with the RSSI
+        Save the packet locally, process the packet and its collisions
         """
         # TODO Can we get more packets? Is there a limit for the channel?
         # There shouldn't. Any number of packets can be sent at the same
         # time. They will interfere, cause collisions, etc.
         # The max number of radios/channels the BS has is only important
         # for different SFs...
+        pkt = LoraPacket.clone(pkt)
+        pkt.rssi = rssi
         self.incoming.append(pkt)
         self.check_collisions()
-
 
     def recv_done(self, pkt, src):
         """
